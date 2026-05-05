@@ -1,111 +1,154 @@
-import { Link, useNavigate } from "react-router-dom"
-import style from "../../Componants/GetProduts/GetProducts.module.css"
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Link, useNavigate } from "react-router-dom";
+import style from "../../Componants/GetProduts/GetProducts.module.css";
 import { useContext, useEffect, useState } from "react";
 import { FilterProducts } from './../../Context/FilterProducts';
 import axios from "axios";
-import fakeImage from "../../assets/images/Annotation 2024-02-21 205940.png"
 
 export default function MyAd() {
-    let { setElement } = useContext(FilterProducts)
-    const [myAdv, setAdv] = useState(null);
-    let { setExpired, expired, userData, setuserData, language } = useContext(FilterProducts)
-    let [isLoading, setIsLoading] = useState(false)
-    let navigate = useNavigate()
+    const { setElement, userData, language } = useContext(FilterProducts);
+
+    const [myAdv, setAdv] = useState([]);
+    const [loadingId, setLoadingId] = useState(null);
+
+    const navigate = useNavigate();
+
     async function getMyAdv() {
+        if (!userData?._id) return;
+
         try {
-            let { data } = await axios.get(`https://zunis-node-js.vercel.app/product/?createdBy=${userData._id}`)
-            setAdv(data.data)
+            const { data } = await axios.get(
+                `https://zunis-node-js.vercel.app/product/?createdBy=${userData._id}`
+            );
+
+            setAdv(data.data);
+
         } catch (error) {
             console.log(error);
         }
     }
-    async function deleteProperty(ItemId) {
-        setIsLoading(true)
-        await axios.delete(`https://zunis-node-js.vercel.app/product/delete?productId=${ItemId}`, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                "token": `Ahmed__${localStorage.getItem("user")}`
-            },
-        })
-            .then(response => {
-                console.log(response.data);
-                setIsLoading(false)
-            })
-            .catch(error => {
-                console.error(error);
-                setIsLoading(false)
-            });
+
+    async function deleteProperty(itemId) {
+        try {
+            setLoadingId(itemId);
+
+            await axios.delete(
+                `https://zunis-node-js.vercel.app/product/delete?productId=${itemId}`,
+                {
+                    headers: {
+                        "token": `Ahmed__${localStorage.getItem("user")}`
+                    }
+                }
+            );
+
+            //update UI مباشرة بدون refetch
+            setAdv(prev => prev.filter(item => item._id !== itemId));
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingId(null);
+        }
     }
+
     function updateProperty(itemId, item) {
         setElement(item);
-        navigate(`/updateProperty/${itemId}`)
+        navigate(`/updateProperty/${itemId}`);
     }
+
     useEffect(() => {
-        getMyAdv()
-        window.scroll(0, 0)
-    }, [])
-    useEffect(() => {
-        getMyAdv()
-    }, [myAdv])
-    return <>
-        <div className="container py-5 ">
-            <div className="row g-3 justify-content-between my-5 alert alert-light ">
-                <h3 className="text-primary col-sm-12 col-md-12 col-lg-6 fw-bold">My Properties</h3>
-                <div className=" d-flex justify-content-center col-sm-12 col-md-12 col-lg-6">
-                    <Link className="d-flex justify-content-center nav-link " to={`/myzone/65d8c2138bfd8107356010e2`}>
-                        <button className={` px-4 py-2 fw-bold  rounded-1 btn btn-primary mx-2`}>  {language == 'ع' ? "AddAppartment" : "اضف شقة"}</button>
+        getMyAdv();
+        window.scroll(0, 0);
+    }, [userData]); 
+
+    return (
+        <div className="container py-5">
+            <div className="row g-3 justify-content-between my-5 alert alert-light">
+                <h3 className="text-primary col-12 col-lg-6 fw-bold">
+                    My Properties
+                </h3>
+
+                <div className="d-flex justify-content-center col-12 col-lg-6 flex-wrap">
+                    <Link to={`/myzone/65d8c2138bfd8107356010e2`}>
+                        <button className="btn btn-primary mx-2">
+                            {language === 'ع' ? "Add Apartment" : "اضف شقة"}
+                        </button>
                     </Link>
-                    <Link className="d-flex justify-content-center nav-link  mx-2" to={`/myzone/65d8c1c01269fe7a10558011`}>
-                        <button className={` px-4 py-2 fw-bold  rounded-1 btn btn-primary mx-2`}> {language == 'ع' ? "AddHome" : "اضف بيت"}</button>
+
+                    <Link to={`/myzone/65d8c1c01269fe7a10558011`}>
+                        <button className="btn btn-primary mx-2">
+                            {language === 'ع' ? "Add Home" : "اضف بيت"}
+                        </button>
                     </Link>
-                    <Link className="d-flex justify-content-center nav-link " to={`/myzone/65d8c23b1269fe7a1055818b`}>
-                        <button className={` px-4 py-2 fw-bold  rounded-1 btn btn-primary mx-2`}>   {language == 'ع' ? "AddLand" : "اضفة قطعة ارض"}</button>
+
+                    <Link to={`/myzone/65d8c23b1269fe7a1055818b`}>
+                        <button className="btn btn-primary mx-2">
+                            {language === 'ع' ? "Add Land" : "اضف قطعة ارض"}
+                        </button>
                     </Link>
                 </div>
             </div>
-            {myAdv == null ? <h3>  {language == 'ع' ? "No Ads yet" : "لا توج اعلانات مضافة"}</h3> :
-                <div className="row py-5">
-                    {myAdv?.map((item, index) => <div key={index} className={`col-sm-12 col-md-4 col-lg-4 ${style.box2} p-4`} >
-                        <Link to={`/productdetails/${item.categoryId.slug}/${item._id}`}>
-                            <div className={`${style.boxImage}`}>
-                                <img src={item.Images[0].secure_url} className="  w-100 " alt="" />
-                            </div>
-                        </Link>
-                        <div >
-                            <h3 className=" fw-bold mt-4 ">
-                                {language == 'ع' ? `${item.price} EGP` : `${item.price} ج.م`}
-                            </h3>
-                            <p className="fw-bold fs-5">{item.title.slice(0, 55)}  </p>
-                            <div className="d-flex">
-                                <div className="d-flex">
-                                    <i className="fa-solid fa-bed  mx-2"></i>
-                                    <p className="fw-bold">{item.propertyDesc.bedrooms} </p>
-                                </div>
-                                <div className="d-flex">
-                                    <i className="fa-solid fa-toilet mx-2 "></i>
-                                    <p className="fw-bold">{item.propertyDesc.bathrooms}</p>
-                                </div>
-                            </div>
-                            <p className="">
-                                {language == 'ع' ? `Area: ${item.propertyDesc.size} m2` : `المساحة: ${item.propertyDesc.size} متر مربع `}
 
+            {myAdv.length === 0 ? (
+                <h3 className="text-center">
+                    {language === 'ع' ? "No Ads yet" : "لا توجد إعلانات"}
+                </h3>
+            ) : (
+                <div className="row py-5">
+                    {myAdv.map((item) => (
+                        <div key={item._id} className={`col-md-4 ${style.box2} p-4`}>
+                            
+                            <Link to={`/productdetails/${item.categoryId.slug}/${item._id}`}>
+                                <div className={style.boxImage}>
+                                    <img src={item.Images[0]?.secure_url} className="w-100" alt="" />
+                                </div>
+                            </Link>
+
+                            <h3 className="fw-bold mt-4">
+                                {language === 'ع' ? `${item.price} EGP` : `${item.price} ج.م`}
+                            </h3>
+
+                            <p className="fw-bold">{item.title.slice(0, 55)}</p>
+
+                            <div className="d-flex">
+                                <span className="me-2">
+                                    🛏 {item.propertyDesc?.bedrooms}
+                                </span>
+                                <span>
+                                    🚿 {item.propertyDesc?.bathrooms}
+                                </span>
+                            </div>
+
+                            <p>
+                                {language === 'ع'
+                                    ? `Area: ${item.propertyDesc?.size} m2`
+                                    : `المساحة: ${item.propertyDesc?.size} متر`}
                             </p>
 
-                            <div className="d-flex ">
-                                <i className="fa-solid fa-location-dot ms-2 "></i>
-                                <p className="">{item.location}</p>
-                            </div>
+                            <p>📍 {item.location}</p>
+
                             <div className="d-flex justify-content-center">
-                                <button onClick={() => updateProperty(item._id, item)} className="btn btn-primary mx-2 w-50">Update Property</button>
-                                <button onClick={() => deleteProperty(item._id)} className="btn btn-danger mx-2 w-50">{isLoading ? <i className="fa fa-spin fa-spinner"></i> : "Delete Property"}</button>
+                                <button
+                                    onClick={() => updateProperty(item._id, item)}
+                                    className="btn btn-primary mx-2 w-50"
+                                >
+                                    Update
+                                </button>
+
+                                <button
+                                    onClick={() => deleteProperty(item._id)}
+                                    className="btn btn-danger mx-2 w-50"
+                                >
+                                    {loadingId === item._id
+                                        ? <i className="fa fa-spinner fa-spin"></i>
+                                        : "Delete"}
+                                </button>
                             </div>
+
                         </div>
-                    </div>)}
-                </div>}
+                    ))}
+                </div>
+            )}
         </div>
-
-
-
-
-    </>
+    );
 }

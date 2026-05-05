@@ -8,12 +8,9 @@ import Filter from "./Componants/Filter/Filter";
 import Myzone from "./Componants/Myzone/Myzone";
 
 import MyAd from "./Componants/MyAd/MyAd";
-import FilterProductsProvide, {
-  FilterProducts,
-} from "./Context/FilterProducts";
 import Register from "./Componants/Register/Register";
 import Login from "./Componants/Login/Login";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import About from "./Componants/About/About";
 import Contacts from "./Componants/Contact/Contact";
@@ -21,13 +18,13 @@ import UpdateProperty from "./Componants/UpdateProperty/UpdateProperty";
 import ConfirmEmail from "./Componants/ConfirmEmail/ConfirmEmail";
 import ConfirmFaile from "./Componants/ConfirmFaile/ConfirmFaile";
 import Message from "./Componants/Message/Message";
-import axios from "axios";
+import { FilterProducts } from "./Context/FilterProducts";
 
 function App() {
   // decode token
 
   let token = localStorage.getItem("user");
-  let { setExpired, expired, setMessages, messages, userData, setuserData } =
+  let { setExpired, userData, setuserData } =
     useContext(FilterProducts);
 
   useEffect(() => {
@@ -40,11 +37,12 @@ function App() {
       setuserData(decode);
       console.log(userData);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const Routes = createHashRouter([
     {
-      path: "",
+      path: "",  
       element: <Layout />,
       children: [
         { index: true, element: <Home /> },

@@ -1,35 +1,67 @@
-import axios from "axios";
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react";
 
-export let FilterProducts = createContext(0)
-function FilterProductsProvide(props) {
-    const [price, setPrice] = useState(0);
-    const [wordSearch, setWordSearch] = useState("");
-    const [expired, setExpired] = useState(true)
-    const [userData, setuserData] = useState(null)
-    const [type, settype] = useState("home")
-    const [messages, setMessages] = useState([]);
+export const FilterProducts = createContext(null);
 
+function FilterProductsProvider({ children }) {
+  const [price, setPrice] = useState(0);
+  const [wordSearch, setWordSearch] = useState("");
+  const [type, setType] = useState("home");
 
-    function typeLanguage() {
-        return localStorage.getItem('language') != null ? localStorage.getItem('language') : ('ع')
+  const [expired, setExpired] = useState(true);
+  const [userData, setUserData] = useState(null);
+
+  const [messages, setMessages] = useState([]);
+  const [element, setElement] = useState(() => {
+    return localStorage.getItem("element")
+      ? JSON.parse(localStorage.getItem("element"))
+      : null;
+  });
+
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem("language") || "ع";
+  });
+
+  // Save language only
+  useEffect(() => {
+    localStorage.setItem("language", language);
+  }, [language]);
+
+  // Save element only if exists
+  useEffect(() => {
+    if (element !== null && element !== undefined) {
+      localStorage.setItem("element", JSON.stringify(element));
     }
-    function putElement() {
-        return localStorage.getItem('element') != null ? localStorage.getItem('element') : (null)
-    }
+  }, [element]);
 
-    const [language, setLanguage] = useState(typeLanguage())
-    const [element, setElement] = useState(putElement())
+  return (
+    <FilterProducts.Provider
+      value={{
+        price,
+        setPrice,
+        wordSearch,
+        setWordSearch,
+        type,
+        setType,
 
-    useEffect(() => {
-        localStorage.setItem('language', language)
-        localStorage.setItem('element', element)
-    }, [language, element])
+        expired,
+        setExpired,
 
+        userData,
+        setUserData,
 
+        messages,
+        setMessages,
 
-    return <FilterProducts.Provider value={{ messages, setMessages, element, setElement, language, setLanguage, price, type, settype, userData, setuserData, expired, setExpired, wordSearch, setPrice, setWordSearch }}>
-        {props.children}
+        element,
+        setElement,
+
+        language,
+        setLanguage,
+      }}
+    >
+      {children}
     </FilterProducts.Provider>
+  );
 }
-export default FilterProductsProvide;
+
+export default FilterProductsProvider;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react"
 import axios from "axios"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import Joi from "joi"
 import { Helmet } from "react-helmet"
 import { FilterProducts } from './../../Context/FilterProducts';
@@ -14,7 +14,6 @@ export default function Register() {
     }, [])
 
     const [viewPassword, setViewPassword] = useState(true);
-    let navigate = useNavigate()
     let [errorList, setErrorList] = useState([])
     const [error, setError] = useState('')
     const [reMessage, setmessage] = useState('')
@@ -99,7 +98,7 @@ export default function Register() {
     return <>
         <Helmet>
 
-            {language == 'ع' ? `Sign up - Sakan` : `انشاء حساب - سكن`}
+            {language === 'ع' ? `Sign up - Sakan` : `انشاء حساب - سكن`}
         </Helmet>
         <div className="py-5">
             <div className="d-flex w-100 justify-content-center py-5">
@@ -109,35 +108,35 @@ export default function Register() {
 
                     </ul> : ""}
 
-                    <h3 className="mb-3 h4 ">{language == 'ع' ? `Sign up` : `انشاء حساب `}</h3>
+                    <h3 className="mb-3 h4 ">{language === 'ع' ? `Sign up` : `انشاء حساب `}</h3>
                     <div className="form-group my-3">
-                        <input onChange={getUser} type="text" placeholder={language == 'ع' ? `full Name` : `الاسم بالكامل`} className="w-100 p-2 " name="fullName" />
+                        <input onChange={getUser} type="text" placeholder={language === 'ع' ? `full Name` : `الاسم بالكامل`} className="w-100 p-2 " name="fullName" />
                     </div>
                     <div className="form-group my-3">
-                        <input onChange={getUser} type="text" placeholder={language == 'ع' ? `Email` : `البريد الالكتروني`} className="w-100 p-2 " name="email" />
+                        <input onChange={getUser} type="text" placeholder={language === 'ع' ? `Email` : `البريد الالكتروني`} className="w-100 p-2 " name="email" />
                     </div>
                     <div className="form-group my-3 ">
                         <div className="position-relative">
-                            <input onChange={getUser} type={viewPassword == false ? "text" : "password"} name="password" placeholder={language == 'ع' ? `Password` : `كلمة المرور`} className="w-100 p-2 " />
-                            {viewPassword ? <img onClick={() => { setViewPassword(false) }} className={`${style.imgIcon}  `} src={not} alt="" style={language == 'ع' ? { right: "2%" } : { left: "2%" }} /> : <img onClick={() => { setViewPassword(true) }} className={`${style.imgIcon}`} src={eye} alt="" style={language == 'ع' ? { right: "2%" } : { left: "2%" }} />}
+                            <input onChange={getUser} type={viewPassword === false ? "text" : "password"} name="password" placeholder={language === 'ع' ? `Password` : `كلمة المرور`} className="w-100 p-2 " />
+                            {viewPassword ? <img onClick={() => { setViewPassword(false) }} className={`${style.imgIcon}  `} src={not} alt="" style={language === 'ع' ? { right: "2%" } : { left: "2%" }} /> : <img onClick={() => { setViewPassword(true) }} className={`${style.imgIcon}`} src={eye} alt="" style={language === 'ع' ? { right: "2%" } : { left: "2%" }} />}
                         </div>
 
 
                     </div>
                     <div className="form-group my-3 ">
                         <div >
-                            <input onChange={getUser} type={viewPassword == false ? "text" : "password"} name="cpassword" placeholder={language == 'ع' ? `Confirm Password` : `تاكيد كلمة المرور`} className="w-100 p-2 " />
+                            <input onChange={getUser} type={viewPassword === false ? "text" : "password"} name="cpassword" placeholder={language === 'ع' ? `Confirm Password` : `تاكيد كلمة المرور`} className="w-100 p-2 " />
                         </div>
 
                     </div>
                     <div className="form-group my-3">
-                        <input onChange={getUser} type="text" name="phoneNumber" placeholder={language == 'ع' ? `Phone number` : `رقم الهاتف`} className="w-100 p-2 " />
+                        <input onChange={getUser} type="text" name="phoneNumber" placeholder={language === 'ع' ? `Phone number` : `رقم الهاتف`} className="w-100 p-2 " />
                     </div>
                     <select onChange={(getUser)} className="w-100 p-1 " name="typeOfUser">
-                        <option value="">{language == 'ع' ? `-- Type of Account --` : `-- نوع الحساب --`}</option>
-                        <option value="owner of real estate">{language == 'ع' ? `owner of property` : `صاحب عقار `}</option>
-                        <option value="marketing company"> {language == 'ع' ? `Marketing Company` : `شركة تسويق عقاري `}</option>
-                        <option value="other"> {language == 'ع' ? `Other` : `شيء اخر `}</option>
+                        <option value="">{language === 'ع' ? `-- Type of Account --` : `-- نوع الحساب --`}</option>
+                        <option value="owner of real estate">{language === 'ع' ? `owner of property` : `صاحب عقار `}</option>
+                        <option value="marketing company"> {language === 'ع' ? `Marketing Company` : `شركة تسويق عقاري `}</option>
+                        <option value="other"> {language === 'ع' ? `Other` : `شيء اخر `}</option>
                     </select>
 
 
@@ -145,10 +144,10 @@ export default function Register() {
                         {error ? <p className="text-danger">{error}</p> : ""}
                         <button type="submit" className="btn btn-primary rounded-0 w-100 ">  {isLoading ? <div className="spinner-border " role="status">
                             <span className="visually-hidden  ">Loading...</span>
-                        </div> : language == 'ع' ? "Register" : 'انشاء حساب'} </button>
+                        </div> : language === 'ع' ? "Register" : 'انشاء حساب'} </button>
                     </div>
                     {reMessage ? <p className="text-primary">{reMessage}</p> : ""}
-                    {language == 'ع' ? <p className="mt-3">   I have Accout<Link to={'/login'}>  Login</Link>  </p> : <p className="mt-3"> لدي حساب بالفعل<Link to={'/login'}> تسجيل الدخول</Link>  </p>}
+                    {language === 'ع' ? <p className="mt-3">   I have Accout<Link to={'/login'}>  Login</Link>  </p> : <p className="mt-3"> لدي حساب بالفعل<Link to={'/login'}> تسجيل الدخول</Link>  </p>}
 
 
                 </form>

@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Joi from "joi";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Helmet } from "react-helmet";
 import { FilterProducts } from "./../../Context/FilterProducts";
 export default function Myzone() {
@@ -51,7 +52,7 @@ export default function Myzone() {
   };
   function getItem(e) {
     let _item = { ...item };
-    if (e.target.name == "title") {
+    if (e.target.name === "title") {
       if (e.target.value.length <= 55) {
         setLetters(e.target.value.length);
         setTitle(e.target.value.slice(0, e.target.value.length));
@@ -153,7 +154,7 @@ export default function Myzone() {
   // R E N D E R     C O D E   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   return (
     <>
-      <Helmet>{language == "ع" ? "My zone - Sakan " : "مساحتي - سكن"}</Helmet>
+      <Helmet>{language === "ع" ? "My zone - Sakan " : "مساحتي - سكن"}</Helmet>
       <div className="container py-5">
         <div className={`  my-5  `}>
           <div className=" ">
@@ -166,7 +167,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="file" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Select images" : "اختر مجموعة صور"}
+                  {language === "ع" ? "Select images" : "اختر مجموعة صور"}
                 </label>
                 <input
                   multiple
@@ -180,7 +181,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="section" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Select Process*" : "اختار العملية *"}{" "}
+                  {language === "ع" ? "Select Process*" : "اختار العملية *"}{" "}
                 </label>
                 <select
                   onChange={getItem}
@@ -192,18 +193,18 @@ export default function Myzone() {
                   <option value="">-- Process --</option>
                   <option value="rent">
                     {" "}
-                    {language == "ع" ? "For Rent" : "للايجار"}
+                    {language === "ع" ? "For Rent" : "للايجار"}
                   </option>
                   <option value="sale">
                     {" "}
-                    {language == "ع" ? "For Sale" : "للبيع"}
+                    {language === "ع" ? "For Sale" : "للبيع"}
                   </option>
                 </select>
               </div>
               <div className="form-group my-4">
                 <label htmlFor="title" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Add Title*" : "اضف عنوانا للاعلان *"}
+                  {language === "ع" ? "Add Title*" : "اضف عنوانا للاعلان *"}
                 </label>
                 <input
                   onChange={getItem}
@@ -214,7 +215,7 @@ export default function Myzone() {
                   name="title"
                 />
                 <div className="text-start pt-2">
-                  {language == "ع"
+                  {language === "ع"
                     ? `${letters}/55 letters `
                     : `${letters} / 55 حرف `}
                 </div>
@@ -222,7 +223,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="price" className="mb-3">
                   {" "}
-                  {language == "ع"
+                  {language === "ع"
                     ? "Add price in EGP*"
                     : "اضف السعر بالجنية المصري *"}
                 </label>
@@ -238,7 +239,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="caption" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Describe property*" : " وصف العقار *"}
+                  {language === "ع" ? "Describe property*" : " وصف العقار *"}
                 </label>
                 <textarea
                   rows={5}
@@ -253,7 +254,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="city" className="mb-3">
                   {" "}
-                  {language == "ع" ? "City*" : "المحافظة *"}
+                  {language === "ع" ? "City*" : "المحافظة *"}
                 </label>
                 <input
                   onChange={getItem}
@@ -267,7 +268,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="desLocation" className="mb-3">
                   {" "}
-                  {language == "ع"
+                  {language === "ع"
                     ? "Address in details*"
                     : "العنوان بالتفاصيل  *"}
                 </label>
@@ -282,7 +283,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="size" className="mb-3">
                   {" "}
-                  {language == "ع"
+                  {language === "ع"
                     ? "Size of property*"
                     : " مساحة العقار بالمتر المربع *"}
                 </label>
@@ -298,7 +299,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="view" className="mb-3">
                   {" "}
-                  {language == "ع"
+                  {language === "ع"
                     ? "View"
                     : " الاطلالة (علي ماذا يطل العقار؟)"}{" "}
                 </label>
@@ -314,7 +315,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="yearsOfConstruction" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Year of Property" : "مباني سنة "}{" "}
+                  {language === "ع" ? "Year of Property" : "مباني سنة "}{" "}
                 </label>
                 <input
                   onChange={getItemSpecial}
@@ -328,7 +329,7 @@ export default function Myzone() {
               </div>
               <div className="form-group my-4">
                 <label htmlFor="bathroom" className="mb-3">
-                  {language == "ع" ? "Numbers of Bathrooms" : " عدد الحمامات "}
+                  {language === "ع" ? "Numbers of Bathrooms" : " عدد الحمامات "}
                 </label>
                 <input
                   onChange={getItemSpecial}
@@ -342,7 +343,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="bedroom" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Numbers of Bedrooms" : "عدد الغرف "}
+                  {language === "ع" ? "Numbers of Bedrooms" : "عدد الغرف "}
                 </label>
                 <input
                   onChange={getItemSpecial}
@@ -356,7 +357,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="floor" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Floor" : "الدور"}{" "}
+                  {language === "ع" ? "Floor" : "الدور"}{" "}
                 </label>
                 <input
                   onChange={getItemSpecial}
@@ -370,7 +371,7 @@ export default function Myzone() {
               <div className="form-group my-4">
                 <label htmlFor="finishingType" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Type of Finishing" : "نوع التشطيب "}
+                  {language === "ع" ? "Type of Finishing" : "نوع التشطيب "}{" "}
                 </label>
                 <select
                   onChange={getItemSpecial}
@@ -382,26 +383,26 @@ export default function Myzone() {
                   <option value="">-- type of finishing --</option>
                   <option value="super lux">
                     {" "}
-                    {language == "ع" ? "Super Lux" : "سوبر لوكس "}
+                    {language === "ع" ? "Super Lux" : "سوبر لوكس "}
                   </option>
                   <option value="lux">
                     {" "}
-                    {language == "ع" ? "Lux" : "لوكس"}
+                    {language === "ع" ? "Lux" : "لوكس"}
                   </option>
                   <option value="without finished">
                     {" "}
-                    {language == "ع" ? "Witout finished" : "لم ينتهي بعد "}
+                    {language === "ع" ? "Witout finished" : "لم ينتهي بعد "}
                   </option>
                   <option value="Garden">
                     {" "}
-                    {language == "ع" ? "Garden" : "حدايق"}
+                    {language === "ع" ? "Garden" : "حدايق"}
                   </option>
                 </select>
               </div>
               <div className="form-group my-4">
                 <label htmlFor="shahrAqary" className="mb-3">
                   {" "}
-                  {language == "ع"
+                  {language === "ع"
                     ? "Sharh Aqary*"
                     : "التسجيل في الشهر العقاري *"}
                 </label>
@@ -415,22 +416,22 @@ export default function Myzone() {
                   <option value="">-- Shahr Aqary --</option>
                   <option value="registered">
                     {" "}
-                    {language == "ع" ? "Registered" : "مسجلة"}
+                    {language === "ع" ? "Registered" : "مسجلة"}
                   </option>
                   <option value="eligible">
                     {" "}
-                    {language == "ع" ? "Eligible" : "صالحة"}
+                    {language === "ع" ? "Eligible" : "صالحة"}
                   </option>
                   <option value="not sure">
                     {" "}
-                    {language == "ع" ? "Not Sure" : "غير متأكد "}
+                    {language === "ع" ? "Not Sure" : "غير متأكد "}
                   </option>
                 </select>
               </div>
               <div className="form-group my-4">
                 <label htmlFor="PaymentMethod" className="mb-3">
                   {" "}
-                  {language == "ع" ? "Payment Method*" : "طرق الدفع *"}
+                  {language === "ع" ? "Payment Method*" : "طرق الدفع *"}
                 </label>
                 <select
                   onChange={getItem}
@@ -441,14 +442,14 @@ export default function Myzone() {
                 >
                   <option value="">-- Choose Payment method --</option>
                   <option value="cash">
-                    {language == "ع" ? "Cash" : "الدفع نقدا "}
+                    {language === "ع" ? "Cash" : "الدفع نقدا "}
                   </option>
                   <option value="installments">
-                    {language == "ع" ? "Installments" : "الدفع بالتقسيط "}
+                    {language === "ع" ? "Installments" : "الدفع بالتقسيط "}
                   </option>
                   <option value="both">
                     {" "}
-                    {language == "ع" ? "Both" : "كلاهما"}
+                    {language === "ع" ? "Both" : "كلاهما"}
                   </option>
                 </select>
               </div>
@@ -456,7 +457,7 @@ export default function Myzone() {
                 <button type="submit" className="btn btn-primary px-5">
                   {isLoading ? (
                     <i className="fa fa-spin fa-spinner"></i>
-                  ) : language == "ع" ? (
+                  ) : language === "ع" ? (
                     "Add"
                   ) : (
                     "اضف"

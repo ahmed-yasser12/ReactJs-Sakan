@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable eqeqeq */
 import { Link, useNavigate } from "react-router-dom"
 import logo from "../../assets/images/logo.png"
 import style from "./Nav.module.css"
@@ -5,7 +7,7 @@ import { useContext, useEffect, useState } from 'react';
 import { FilterProducts } from "../../Context/FilterProducts";
 
 export default function Nav() {
-    let { setExpired, expired, userData, setuserData, messages, language, setLanguage } = useContext(FilterProducts)
+    let { messages, language, setLanguage } = useContext(FilterProducts)
     let [read, setRead] = useState(false);
 
     let navigate = useNavigate()

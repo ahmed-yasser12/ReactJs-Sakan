@@ -1,178 +1,249 @@
-import React, { useContext, useEffect, useState } from "react";
-import style from "./Contact.module.css"
-import contactImage from "../../assets/images/contactImage.jfif"
+/* eslint-disable jsx-a11y/iframe-has-title */
+import { useContext, useEffect, useState } from "react";
+import style from "./Contact.module.css";
+import contactImage from "../../assets/images/contactImage.jfif";
 import { Helmet } from "react-helmet";
-import { FilterProducts } from './../../Context/FilterProducts';
-import Joi from "joi"
+import { FilterProducts } from "./../../Context/FilterProducts";
+import Joi from "joi";
 import axios from "axios";
 
 function Contacts() {
-    let { language } = useContext(FilterProducts)
-    let [errorList, setErrorList] = useState([])
-    const [error, setError] = useState('')
-    const [reMessage, setmessage] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
+  const { language } = useContext(FilterProducts);
 
+  const initialState = {
+    fullName: "",
+    email: "",
+    phone: "",
+    message: "",
+  };
 
-    const [messageData, setmessageData] = useState(
-        {
-            fullName: "",
-            email: "",
-            phone: "",
-            message: "",
-        }
-    )
-    // set interval 
-    useEffect(() => {
-        if (reMessage) {
-            const timeoutId = setTimeout(() => {
-                setmessage('');
-            }, 5000);
+  const [messageData, setMessageData] = useState(initialState);
+  const [errors, setErrors] = useState([]);
+  const [serverError, setServerError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-            return () => clearTimeout(timeoutId);
-        }
-    }, [reMessage]);
+  // clear success message
+  useEffect(() => {
+    if (!success) return;
 
-    function getmessageData(e) {
-        let _messageData = { ...messageData }
-        _messageData[e.target.name] = e.target.value;
-        setmessageData(_messageData)
-        console.log(messageData)
-    }
-    function validateRegister() {
-        let schema = Joi.object({
-            fullName: Joi.string().required().min(3).max(50),
-            message: Joi.string().required().min(10).max(50),
+    const timer = setTimeout(() => setSuccess(""), 4000);
+    return () => clearTimeout(timer);
+  }, [success]);
 
-            email: Joi
-                .string()
-                .email({ tlds: { allow: ["com", "net"] } })
-                .required(),
-            phone: Joi.string().regex(/^(?:\+?20|0)(?:1\d{9}|7\d{8}|8\d{8}|9\d{8})$/),
+  // handle input
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-        })
-        return (schema.validate(messageData, { abortEarly: false }))
-    }
-    async function sendData() {
-        await axios.post(`https://zunis-node-js.vercel.app/message/messageToAdmin`, messageData,
+    setMessageData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-            {
-                "Content-Type": "application/json",
-            },
-        ).then((response) => {
-            console.log(response.data)
-            setmessage(response.data?.message)
-            setIsLoading(false)
-            setmessageData({
-                fullName: "",
-                email: "",
-                phone: "",
-                message: "",
-            })
-        }).catch((error) => {
-            console.log(error.response.data.Error);
-            setError(error.response.data?.Error);
-            setIsLoading(false)
+    setErrors([]);
+    setServerError("");
+  };
 
-        });
-    }
-    function submitForm(e) {
-        e.preventDefault()
-        setIsLoading(true)
-        setmessage("")
-        setError("");
+  // validation
+  const validate = () => {
+    const schema = Joi.object({
+      fullName: Joi.string().min(3).max(50).required(),
+      email: Joi.string().email({ tlds: { allow: ["com", "net"] } }).required(),
+      phone: Joi.string()
+        .pattern(/^(?:\+?20|0)(?:1\d{9})$/)
+        .required(),
+      message: Joi.string().min(10).max(500).required(),
+    });
 
+    return schema.validate(messageData, { abortEarly: false });
+  };
 
-        let validation = validateRegister()
-        if (validation.error) {
-            setIsLoading(false)
-            setmessage("")
-            setError("");
+  // reset form
+  const resetForm = () => setMessageData(initialState);
 
+  // submit
+  const submitForm = async (e) => {
+    e.preventDefault();
 
-            setErrorList(validation.error.details)
-        } else {
-            console.log('true')
-            sendData()
-        }
+    const { error } = validate();
+
+    if (error) {
+      setErrors(error.details);
+      return;
     }
 
-    return (
-        <>
-            <Helmet>
-                <title>    {language == 'ع' ? "Contact us - sakan" : "تواصل معنا - سكن"}</title>
-            </Helmet>
-            <div className={`w-100 vh-100 ${style.background} d-flex pt-5 `} style={{ backgroundImage: `URL(${contactImage})` }}>
-                <div className="p-5">
-                    <h3 className="h1 fw-bold">  {language == 'ع' ? "contact Us" : " تواصل معنا   "}</h3>
-                    <p className="h3"> {language == 'ع' ? "For any Question" : "   لاي سؤال   "} </p>
-                </div>
+    try {
+      setLoading(true);
+
+      const { data } = await axios.post(
+        "https://zunis-node-js.vercel.app/message/messageToAdmin",
+        messageData
+      );
+
+      setSuccess(data?.message || "Message sent successfully");
+      resetForm();
+    } catch (err) {
+      setServerError(err?.response?.data?.Error || "Server Error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isArabic = language === "ع";
+
+  return (
+    <>
+      <Helmet>
+        <title>{isArabic ? "تواصل معنا - سكن" : "Contact Us - Sakan"}</title>
+      </Helmet>
+
+      {/* HERO */}
+      <div
+        className="w-100 position-relative"
+        style={{
+          backgroundImage: `url(${contactImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          height: "75vh",
+        }}
+      >
+        <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
+
+        <div className="container position-relative text-white h-100 d-flex flex-column justify-content-center">
+          <h1 className="fw-bold">
+            {isArabic ? "تواصل معنا" : "Contact Us"}
+          </h1>
+          <p className="opacity-75">
+            {isArabic
+              ? "نحن هنا لمساعدتك في أي وقت"
+              : "We are here to help you anytime"}
+          </p>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className={`${style.bgContact} py-5`}>
+        <div className="container">
+          <div className="row g-4">
+
+            {/* INFO */}
+            <div className="col-12 col-lg-5">
+              <div className="p-4 rounded-4 text-white shadow"
+                style={{
+                  background: "linear-gradient(135deg,#102855,#1b3a73)",
+                }}
+              >
+                <h4 className="mb-4">
+                  {isArabic ? "معلومات التواصل" : "Contact Info"}
+                </h4>
+
+                <p>Email: Sakan@house.com</p>
+                <p>Phone: +2011577954437</p>
+                <p>{isArabic ? "طنطا، مصر" : "Tanta, Egypt"}</p>
+              </div>
             </div>
-            <div className={`${style.bgContact} `}>
-                <div className="container ">
 
-                    <div className="row ">
-                        <div className="col-md-6 py-4">
-                            <h3 className="text-light h2 mb-5">
-                                {language == 'ع' ? "Fore more details" : "لمزيد من المعلومات"}
-                            </h3>
-                            <div>
-                                <h4 className="text-info">  {language == 'ع' ? "Email  " : " الالكتروني البريد"}</h4>
-                                <h5 className="mb-2 text-light">Sakan@house.com</h5>
-                                <h4 className="text-info">  {language == 'ع' ? "phone  " : " الهاتف "}</h4>
-                                <h5 className="text-light">+2011577954437</h5>
-                                <h5 className="text-light">+2012788445537</h5>
-                                <h4 className="text-info">   {language == 'ع' ? "Address  " : " العنوان "}</h4>
-                                <h5 className="mb-2 text-light">  {language == 'ع' ? "Tanta, Egypt  " : "   مصر , طنطا"}</h5>
-                                <div className="socail-media my-4">
-                                    <h3 className="text-light"> {language == 'ع' ? "Social media  " : " مواقع التواصل الاجتماعي  "}</h3>
-                                    <div className="d-flex mt-3 align-items-center justify-content-start ">
-                                        <i className="fa-brands fa-facebook text-primary fs-5 text-white "></i>
-                                        <i class="fa-brands fa-instagram text-primary fs-5 text-white mx-3"></i>
-                                        <i class="fa-brands fa-twitter text-primary fs-5 text-white "></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6      ">
-                            <form onSubmit={submitForm} action="" className=" w-100">
-                                {errorList.length > 0 ? <ul>
-                                    {errorList.map((item, index) => <li className="text-danger" key={index}>{item.message}</li>)}
+            {/* FORM */}
+            <div className="col-12 col-lg-7">
+              <div className="bg-white p-4 p-md-5 rounded-4 shadow">
 
-                                </ul> : ""}
-                                <div className={`${style.bgLayer} px-md-5 pt-3  my-5 px-sm-2  `}>
+                <h4 className="text-center mb-4">
+                  {isArabic ? "أرسل رسالة" : "Send Message"}
+                </h4>
 
-                                    <h3 className="mb-4"> {language == 'ع' ? "What do you want?  " : " ماذا تريد ان تساءل؟  "}</h3>
-                                    <div className="form-group ">
-                                        <input onChange={getmessageData} value={messageData.fullName} name="fullName" required type="text" placeholder={language == 'ع' ? "Full Name  " : "    الاسم بالكامل  "} className={`w-100 p-2 ${style.inputContact}`} />
-                                    </div>
-                                    <div className="form-group my-3">
-                                        <input onChange={getmessageData} value={messageData.email} name="email" required type="email" placeholder={language == 'ع' ? "Email  " : " البريد الالكتروني      "} className={`w-100 p-2 ${style.inputContact}`} />
+                {/* ERRORS */}
+                {errors.length > 0 && (
+                  <ul className="text-danger small">
+                    {errors.map((e, i) => (
+                      <li key={i}>{e.message}</li>
+                    ))}
+                  </ul>
+                )}
 
-                                    </div>
-                                    <div className="form-group my-3">
-                                        <input onChange={getmessageData} value={messageData.phone} name="phone" required type="Number" placeholder={language == 'ع' ? "Phone  " : " رقم الهاتف     "} className={`w-100 p-2 ${style.inputContact}`} />
+                {/* FORM */}
+                <form onSubmit={submitForm} className="row w-100 g-3">
 
-                                    </div>
-                                    <div className="form-group ">
-                                        <textarea onChange={getmessageData} value={messageData.message} name="message" required className={`w-100 p-2 ${style.inputContact}`} placeholder={language == 'ع' ? "Message  " : "     رسالة  "} id="" cols="30" rows="5"></textarea>
-                                    </div>
-                                    {error ? <p className="text-danger">{error}</p> : ""}
-                                    {reMessage ? <p className="text-success h4 fw-bolder  ">{reMessage}</p> : ""}
+                  <div className="col-12">
+                    <input
+                      name="fullName"
+                      value={messageData.fullName}
+                      onChange={handleChange}
+                      placeholder={isArabic ? "الاسم الكامل" : "Full Name"}
+                      className="form-control p-3"
+                    />
+                  </div>
 
-                                    <button className={` mt-2 ${style.btnContact} rounded-0  w-100  mb-5 border-0 p-3  text-white`}> {isLoading ? <div className="spinner-border " role="status">
-                                        <span className="visually-hidden  ">Loading...</span>
-                                    </div> : language == 'ع' ? "Send now  " : "   ارسل الان   "}</button>
-                                </div>
+                  <div className="col-md-6">
+                    <input
+                      name="email"
+                      value={messageData.email}
+                      onChange={handleChange}
+                      placeholder="Email"
+                      className="form-control p-3"
+                    />
+                  </div>
 
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                  <div className="col-md-6">
+                    <input
+                      name="phone"
+                      value={messageData.phone}
+                      onChange={handleChange}
+                      placeholder={isArabic ? "الهاتف" : "Phone"}
+                      className="form-control p-3"
+                    />
+                  </div>
+
+                  <div className="col-12">
+                    <textarea
+                      name="message"
+                      value={messageData.message}
+                      onChange={handleChange}
+                      rows="5"
+                      placeholder={isArabic ? "رسالتك" : "Message"}
+                      className="form-control p-3"
+                    />
+                  </div>
+
+                  {serverError && (
+                    <p className="text-danger">{serverError}</p>
+                  )}
+
+                  {success && (
+                    <p className="text-success">{success}</p>
+                  )}
+
+                  <div className="col-12">
+                    <button
+                      disabled={loading}
+                      className="btn btn-dark w-100 py-3 fw-bold"
+                    >
+                      {loading
+                        ? isArabic
+                          ? "جاري الإرسال..."
+                          : "Sending..."
+                        : isArabic
+                          ? "إرسال"
+                          : "Send"}
+                    </button>
+                  </div>
+
+                </form>
+
+              </div>
             </div>
-            <iframe className="border-0 w-100 vh-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3427.2011195004666!2d31.00483886028718!3d30.796993774659196!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14f7c951c828d9a3%3A0x1442acda87525e4f!2z2LfZhti32Kcg2KfZhNi62LHYqNmK2Yc!5e0!3m2!1sar!2seg!4v1708955936387!5m2!1sar!2seg" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </>
-    );
+
+          </div>
+        </div>
+      </div>
+
+      {/* MAP */}
+      <iframe
+        className="w-100 border-0"
+        style={{ height: "450px" }}
+        src="https://www.google.com/maps/embed?pb=..."
+      />
+    </>
+  );
 }
 
 export default Contacts;

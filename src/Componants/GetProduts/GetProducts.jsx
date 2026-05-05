@@ -1,133 +1,176 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom"
-import fakeImage from "../../assets/images/Annotation 2024-02-21 205940.png"
-import style from "./GetProducts.module.css"
+import { Link, useParams } from "react-router-dom";
+import fakeImage from "../../assets/images/Annotation 2024-02-21 205940.png";
 import { Helmet } from "react-helmet";
-import { FilterProducts } from './../../Context/FilterProducts';
+import { FilterProducts } from "./../../Context/FilterProducts";
+
 export default function GetProducts() {
-    let arr = [1, 2, 3]
-    let { language } = useContext(FilterProducts)
-    let { name, id } = useParams();
-    const [itemsList, setItemsList] = useState([])
-    async function getproduct() {
-        const { data } = await axios.get(`https://zunis-node-js.vercel.app/product/${name}`);
-        setItemsList(data.data);
-    };
+
+    const { language } = useContext(FilterProducts);
+    const { name, id } = useParams();
+
+    const [itemsList, setItemsList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    async function getProduct() {
+        try {
+            setIsLoading(true);
+            setError("");
+
+            const { data } = await axios.get(
+                `https://zunis-node-js.vercel.app/product/${name}`
+            );
+
+            setItemsList(data.data || []);
+
+        } catch (err) {
+            setError("Failed to load data");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
-        getproduct()
-        window.scroll(0, 0)
-    }, [])
-    useEffect(() => {
-        getproduct()
-    }, [itemsList.length, name])
-    return <>
-        <Helmet>
-            <title>  {language == 'ع' ? `All properties - Sakan` : 'استكشف بعض العقارات - سكن'}</title>
-        </Helmet>
-        <div className="container py-5">
-            <div className="py-5">
+        getProduct();
+        window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [name]);
+
+    return (
+        <>
+            <Helmet>
+                <title>
+                    {language === 'ع'
+                        ? "All properties - Sakan"
+                        : "استكشف العقارات - سكن"}
+                </title>
+            </Helmet>
+
+            <div className="container py-5">
+
                 <div className="d-flex justify-content-between">
-                    <h3 className="h5"> {language == 'ع' ? `Explore best of Properties` : 'استكشف افضل العقارات'}</h3>
+                    <h3>
+                        {language === 'ع'
+                            ? "Explore best properties"
+                            : "استكشف افضل العقارات"}
+                    </h3>
+
                     <Link to={`/myzone/${id}`}>
-                        <button className="btn btn-danger">{language == 'ع' ? `Add Advertisement` : 'اضف اعلانا'}</button>
+                        <button className="btn btn-danger">
+                            {language === 'ع'
+                                ? "Add Advertisement"
+                                : "اضف اعلان"}
+                        </button>
                     </Link>
                 </div>
-                <div className="row mt-5 g-0">
-                    {itemsList.length <= 0 ? arr.map((item, index) => <div key={index} className={`col-sm-12 col-md-6 col-lg-4 p-4 ${style.box}`} >
-                        <img src={fakeImage} className="card-img-top rounded-0 w-100" alt="..." />
-                        <div >
-                            <div className="card-body">
-                                <h5 className="card-title placeholder-glow">
-                                    <span className="placeholder col-6 w-100"></span>
-                                </h5>
-                                <p className="card-text placeholder-glow">
-                                    <span className="placeholder col-7"></span>
-                                    <span className="placeholder col-4"></span>
-                                    <span className="placeholder col-4"></span>
-                                    <span className="placeholder col-4"></span>
-                                    <span className="placeholder col-4"></span>
-                                    <span className="placeholder col-4"></span>
 
-                                    <span className="placeholder col-4"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>) : itemsList.map((item, index) => <div key={index} className={`col-sm-12 col-md-6 col-lg-4 ${style.box2} p-4`} >
-                        <Link to={`/productdetails/${item.categoryId.slug}/${item._id}`}>
-                            <div className={`${style.boxImage}`}>
-                                <img src={item.Images[0].secure_url} className="  w-100 " alt="" />
+                {/* States */}
+                {isLoading && <h3 className="text-center mt-5">Loading...</h3>}
+                {error && <p className="text-danger">{error}</p>}
 
-                            </div>                    </Link>
-                        <div >
-                            <h3 className=" fw-bold mt-4 "> 
-                                {language == 'ع' ? `${item.price} EGP` : `${item.price} ج.م`}
+                {!isLoading && itemsList.length === 0 && (
+                    <h3 className="text-center mt-5">
+                        {language === 'ع'
+                            ? "No items found"
+                            : "لا يوجد عقارات"}
+                    </h3>
+                )}
 
-                            </h3>
-                            <p className="fw-bold fs-5">{item.title.slice(0, 55)}  </p>
-                            <div className="d-flex">
-                                <div className="d-flex">
-                                    <i className="fa-solid fa-bed  mx-2"></i>
-                                    <p className="fw-bold">{item.propertyDesc.bedrooms} </p>
-                                </div>
-                                <div className="d-flex">
-                                    <i className="fa-solid fa-toilet mx-2 "></i>
-                                    <p className="fw-bold">{item.propertyDesc.bathrooms}</p>
-                                </div>
-                            </div>
-                            <p className="">
-                                {language == 'ع' ? `Area : ${item.propertyDesc.size} m2` : `المساحة: ${item.propertyDesc.size} متر مربع `}</p>
-                            <div className="d-flex ">
-                                <i className="fa-solid fa-location-dot ms-2 "></i>
-                                <p className="">{item.location}</p>
-                            </div>
-                            <div className="d-flex flex-wrap">
-                                <Link to={`/productdetails/${item.categoryId.slug}/${item._id}`}>
-                                    <button className={` px-4 py-2 fw-bold m-2  rounded-1 ${style.contactButton} `}>
+                <div className="row mt-5">
 
-                                        {language == 'ع' ? `details` : 'التفاصيل'}
-                                    </button>
+                    {itemsList.map((item) => {
+
+                        const modalId = `modal-${item._id}`;
+
+                        return (
+                            <div key={item._id} className="col-md-4">
+
+                                <Link to={`/productdetails/${item.categoryId?.slug}/${item._id}`}>
+                                    <img
+                                        src={item.Images?.[0]?.secure_url || fakeImage}
+                                        className="w-100"
+                                        alt={item.title}
+                                    />
                                 </Link>
-                                <button type="button" className={` px-4 py-2 fw-bold m-2  rounded-1 ${style.contactButton} mx-2`} data-bs-toggle="modal" data-bs-target="#exampleModal">
 
-                                    {language == 'ع' ? `Phone` : 'اتصل'}
-                                </button>
-                                <button type="button" className={` px-4 py-2 fw-bold  m-2 rounded-1 ${style.contactButton} mx-2`} data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <h4 className="mt-3">
+                                    {item.price} {language === 'ع' ? "EGP" : "ج.م"}
+                                </h4>
 
-                                    {language == 'ع' ? `Mail` : 'الايميل'}
-                                </button>
+                                <p>{item.title?.slice(0, 55)}</p>
 
-                                <div className="modal fade my-5" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div className="modal-dialog my-5">
+                                <p>
+                                    {language === 'ع'
+                                        ? `Area: ${item.propertyDesc?.size} m²`
+                                        : `المساحة: ${item.propertyDesc?.size}`}
+                                </p>
+
+                                <p>{item.location}</p>
+
+                                <div className="d-flex gap-2 flex-wrap">
+
+                                    <Link to={`/productdetails/${item.categoryId?.slug}/${item._id}`}>
+                                        <button className="btn btn-dark">
+                                            {language === 'ع' ? "Details" : "التفاصيل"}
+                                        </button>
+                                    </Link>
+
+                                    <button
+                                        className="btn btn-secondary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target={`#${modalId}`}
+                                    >
+                                        {language === 'ع' ? "Contact" : "تواصل"}
+                                    </button>
+
+                                </div>
+
+                                {/* Modal */}
+                                <div
+                                    className="modal fade"
+                                    id={modalId}
+                                    tabIndex={-1}
+                                >
+                                    <div className="modal-dialog">
                                         <div className="modal-content">
+
                                             <div className="modal-header">
-                                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <button
+                                                    type="button"
+                                                    className="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                ></button>
                                             </div>
+
                                             <div className="modal-body">
                                                 <p>
-                                                    {language == 'ع' ? ` Phone : ${item.createdBy.phoneNumber}` : `رقم الهاتف: ${item.createdBy.phoneNumber}`}
+                                                    Phone: {item.createdBy?.phoneNumber || "N/A"}
                                                 </p>
                                                 <p>
-                                                    {language == 'ع' ? `Email : ${item.createdBy.email}` : `البريد الالكتروني : ${item.createdBy.email}`}
-
-
+                                                    Email: {item.createdBy?.email || "N/A"}
                                                 </p>
                                             </div>
-                                            <div className="modal-footer">
-                                                <a href={`mailto:${item.createdBy.email}?subject=Subject line`}>
-                                                    <button type="button" className={` px-4 py-2 fw-bold  rounded-1 ${style.contactButton} mx-2`}>
-                                                        {language == 'ع' ? `Send Messange` : `ارسل رسالة`}
 
+                                            <div className="modal-footer">
+                                                <a href={`mailto:${item.createdBy?.email}`}>
+                                                    <button className="btn btn-primary">
+                                                        Send Email
                                                     </button>
                                                 </a>
                                             </div>
+
                                         </div>
                                     </div>
-                                </div>                        </div>
-                        </div>
-                    </div>)}
+                                </div>
+
+                            </div>
+                        );
+                    })}
+
                 </div>
             </div>
-        </div>
-    </>
+        </>
+    );
 }
