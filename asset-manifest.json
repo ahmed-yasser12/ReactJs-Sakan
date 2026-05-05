@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/ReactJs-Sakan/static/css/main.8ecbf750.css",
-    "main.js": "/ReactJs-Sakan/static/js/main.77962d92.js",
+    "main.css": "/ReactJs-Sakan/static/css/main.1313006d.css",
+    "main.js": "/ReactJs-Sakan/static/js/main.b66686cd.js",
     "static/js/453.2bdd6fe7.chunk.js": "/ReactJs-Sakan/static/js/453.2bdd6fe7.chunk.js",
     "static/media/about2.jfif": "/ReactJs-Sakan/static/media/about2.8c11ed23f381077aafb7.jfif",
     "static/media/about1.jfif": "/ReactJs-Sakan/static/media/about1.0953579ac1047964e79d.jfif",
@@ -25,12 +25,12 @@
     "static/media/fa-v4compatibility.ttf": "/ReactJs-Sakan/static/media/fa-v4compatibility.2eb7b3ef25042305f3ff.ttf",
     "static/media/fa-v4compatibility.woff2": "/ReactJs-Sakan/static/media/fa-v4compatibility.b3049b13a93f07e026fc.woff2",
     "index.html": "/ReactJs-Sakan/index.html",
-    "main.8ecbf750.css.map": "/ReactJs-Sakan/static/css/main.8ecbf750.css.map",
-    "main.77962d92.js.map": "/ReactJs-Sakan/static/js/main.77962d92.js.map",
+    "main.1313006d.css.map": "/ReactJs-Sakan/static/css/main.1313006d.css.map",
+    "main.b66686cd.js.map": "/ReactJs-Sakan/static/js/main.b66686cd.js.map",
     "453.2bdd6fe7.chunk.js.map": "/ReactJs-Sakan/static/js/453.2bdd6fe7.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8ecbf750.css",
-    "static/js/main.77962d92.js"
+    "static/css/main.1313006d.css",
+    "static/js/main.b66686cd.js"
   ]
 }
